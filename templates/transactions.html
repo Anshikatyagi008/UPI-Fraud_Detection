@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Transactions - Sentinel AI</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #020617;
+    color: white;
+}
+
+/* NAVBAR (same as dashboard) */
+.navbar {
+    background:#0f172a;
+    padding:15px 25px;
+    display:flex;
+    justify-content:space-between;
+    border-bottom:1px solid #1e293b;
+}
+
+.nav-links a {
+    margin-left:20px;
+    color:#94a3b8;
+    text-decoration:none;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color:#38bdf8;
+}
+
+/* CONTAINER */
+.container {
+    padding:25px;
+    max-width: 1100px;
+    margin:auto;
+}
+
+/* TABLE CARD */
+.table-box {
+    background:#1e293b;
+    padding:20px;
+    border-radius:12px;
+    border:1px solid #334155;
+}
+
+/* TABLE */
+table {
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+}
+
+th {
+    text-align:left;
+    color:#94a3b8;
+    font-size:13px;
+    padding:10px;
+    border-bottom:1px solid #334155;
+}
+
+td {
+    padding:10px;
+    border-bottom:1px solid #334155;
+    font-size:14px;
+}
+
+/* ROW COLORS */
+.safe { color:#22c55e; }
+.suspicious { color:#f59e0b; }
+.fraud { color:#ef4444; }
+
+/* EMPTY STATE */
+.empty {
+    text-align:center;
+    padding:20px;
+    color:#64748b;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <h2 style="color:#38bdf8; margin:0;">🛡️ Sentinel AI</h2>
+    <div class="nav-links">
+        <a href="/">Dashboard</a>
+        <a href="/transactions">Transactions</a>
+        <a href="/analytics">Analytics</a>
+        <a href="/logout" style="color:#ef4444;">Logout</a>
+    </div>
+</div>
+
+<!-- CONTENT -->
+<div class="container">
+
+    <div class="table-box">
+        <h2 style="margin-top:0;">Transaction History</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Amount (₹)</th>
+                    <th>Status</th>
+                    <th>Risk %</th>
+                </tr>
+            </thead>
+            <tbody id="t"></tbody>
+        </table>
+
+        <div id="emptyMsg" class="empty" style="display:none;">
+            No transactions yet
+        </div>
+    </div>
+
+</div>
+
+<script>
+fetch("/history")
+.then(r => r.json())
+.then(d => {
+
+    if(d.length === 0){
+        document.getElementById("emptyMsg").style.display = "block";
+        return;
+    }
+
+    document.getElementById("t").innerHTML =
+    d.map(x => `
+        <tr>
+            <td>${x.time}</td>
+            <td>₹${x.amount}</td>
+            <td class="${x.status}">${x.prediction}</td>
+            <td>${(x.confidence*100).toFixed(1)}%</td>
+        </tr>
+    `).join("");
+
+});
+</script>
+
+</body>
+</html>
